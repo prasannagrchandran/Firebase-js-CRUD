@@ -10,11 +10,17 @@ const editModalForm = document.querySelector('.edit-modal .form');
 const btnAdd = document.querySelector('.btn-add');
 
 const tableUsers = document.querySelector('.table-users');
-
+var temp=[]
 let id;
 
 // Create element and render users
 const renderUser = doc => {
+
+  if(temp.includes(doc.id)){
+
+  }
+  else{
+    temp.push(doc.id)
   const tr = `
     <tr data-id='${doc.id}'>
       <td>${doc.data().firstName}</td>
@@ -27,8 +33,10 @@ const renderUser = doc => {
       </td>
     </tr>
   `;
+  console.log('called'+doc.id);
+  console.log(temp)
   tableUsers.insertAdjacentHTML('beforeend', tr);
-
+}
   // Click edit user
   const btnEdit = document.querySelector(`[data-id='${doc.id}'] .btn-edit`);
   btnEdit.addEventListener('click', () => {
@@ -76,7 +84,9 @@ window.addEventListener('click', e => {
 
 // Get all users
 db.collection('users').get().then(querySnapshot => {
+  
   querySnapshot.forEach(doc => {
+    
     renderUser(doc);
   })
 });
@@ -86,17 +96,20 @@ db.collection('users').onSnapshot(snapshot => {
   snapshot.docChanges().forEach(change => {
     if(change.type === 'added') {
       renderUser(change.doc);
+      
     }
     if(change.type === 'removed') {
       let tr = document.querySelector(`[data-id='${change.doc.id}']`);
       let tbody = tr.parentElement;
       tableUsers.removeChild(tbody);
+      
     }
     if(change.type === 'modified') {
       let tr = document.querySelector(`[data-id='${change.doc.id}']`);
       let tbody = tr.parentElement;
       tableUsers.removeChild(tbody);
       renderUser(change.doc);
+
     }
   })
 })
